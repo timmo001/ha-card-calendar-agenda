@@ -17,6 +17,12 @@ export {
   isNumericState,
   isUnavailableState,
 } from "./data/entity";
+export { fetchCalendarEvents } from "./data/calendar";
+export type {
+  Calendar,
+  CalendarEvent,
+  CalendarEventData,
+} from "./data/calendar";
 export type {
   HomeAssistant,
   LovelaceCard,

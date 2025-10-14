@@ -2,7 +2,13 @@ import { css, CSSResultGroup, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { assert } from "superstruct";
-import { HomeAssistant, LovelaceCard, LovelaceCardEditor } from "../ha";
+import {
+  HomeAssistant,
+  LovelaceCard,
+  LovelaceCardEditor,
+  CalendarEvent,
+  fetchCalendarEvents,
+} from "../ha";
 import { BaseElement } from "../utils/base-element";
 import { cardStyle } from "../utils/card-styles";
 import { registerCustomCard } from "../utils/custom-cards";
@@ -33,11 +39,14 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
   public setConfig(config: CalendarAgendaCardConfig): void {
     assert(config, calendarAgendaCardConfigStruct);
     this._config = config;
+    this._fetchEvents();
   }
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: CalendarAgendaCardConfig;
+
+  @state() private _events?: CalendarEvent[];
 
   public static async getStubConfig(): Promise<CalendarAgendaCardConfig> {
     return { type: `custom:${CARD_NAME}` };
@@ -45,6 +54,36 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
   public getCardSize(): number {
     return 3;
+  }
+
+  protected updated(changedProps: Map<string, any>): void {
+    super.updated(changedProps);
+    if (changedProps.has("hass")) {
+      this._fetchEvents();
+    }
+  }
+
+  private async _fetchEvents(): Promise<void> {
+    if (!this.hass || !this._config?.entity) {
+      return;
+    }
+
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setDate(end.getDate() + 7);
+    end.setHours(23, 59, 59, 999);
+
+    try {
+      const { events } = await fetchCalendarEvents(this.hass, start, end, [
+        { entity_id: this._config.entity },
+      ]);
+      this._events = events;
+    } catch (err) {
+      console.error("Error fetching calendar events:", err);
+      this._events = [];
+    }
   }
 
   protected render() {
@@ -59,6 +98,12 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     >
       <div class="card-content">
         <p>Calendar Agenda Card</p>
+        ${this._config.entity
+          ? html`
+              <p>Calendar: ${this._config.entity}</p>
+              <p>Events: ${this._events?.length ?? "Loading..."}</p>
+            `
+          : html`<p>No calendar selected</p>`}
       </div>
     </ha-card>`;
   }
