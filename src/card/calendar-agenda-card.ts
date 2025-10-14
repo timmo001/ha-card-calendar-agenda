@@ -58,6 +58,15 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     return 3;
   }
 
+  public getGridOptions(): any {
+    return {
+      columns: 12,
+      rows: 3,
+      min_columns: 5,
+      min_rows: 2,
+    };
+  }
+
   protected updated(changedProps: Map<string, any>): void {
     super.updated(changedProps);
     if (changedProps.has("hass")) {
@@ -93,38 +102,38 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
     const sortedEvents = this._events
       ? [...this._events].sort(
-          (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
-        )
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+      )
       : [];
 
     return html`<ha-card
       class=${classMap({
-        "hide-background": this._config?.hide_background === true,
-      })}
+      "hide-background": this._config?.hide_background === true,
+    })}
     >
       ${this._config.title !== undefined
         ? html`<div class="card-header">${this._config.title}</div>`
         : nothing}
       <div class="card-content">
         ${!this._config.entity
-          ? html`<p>No calendar selected</p>`
-          : sortedEvents.length === 0
-            ? html`<p>No events</p>`
-            : html`
+        ? html`<p>No calendar selected</p>`
+        : sortedEvents.length === 0
+          ? html`<p>No events</p>`
+          : html`
                 <ul>
                   ${sortedEvents.map((event) => {
-                    const startDate = new Date(event.start);
-                    const showTimeOnly = isToday(startDate);
-                    const dateTime = formatDateTime(
-                      startDate,
-                      this.hass.locale.language || "en",
-                      showTimeOnly
-                    );
-                    const duration = formatDuration(event.start, event.end!);
-                    return html`<li>
+            const startDate = new Date(event.start);
+            const showTimeOnly = isToday(startDate);
+            const dateTime = formatDateTime(
+              startDate,
+              this.hass.locale.language || "en",
+              showTimeOnly
+            );
+            const duration = formatDuration(event.start, event.end!);
+            return html`<li>
                       ${event.title} - ${dateTime} (${duration})
                     </li>`;
-                  })}
+          })}
                 </ul>
               `}
       </div>
