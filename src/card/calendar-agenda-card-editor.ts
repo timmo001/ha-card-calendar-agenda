@@ -23,12 +23,13 @@ export class CalendarAgendaCardEditor extends LitElement {
       },
     },
     {
-      name: "entity",
+      name: "entities",
       selector: {
         entity: {
           filter: {
             domain: "calendar",
           },
+          multiple: true,
         },
       },
     },
@@ -55,7 +56,16 @@ export class CalendarAgendaCardEditor extends LitElement {
 
   public setConfig(config: CalendarAgendaCardConfig): void {
     assert(config, calendarAgendaCardConfigStruct);
-    this._config = config;
+
+    if (config.entity && !config.entities) {
+      this._config = {
+        ...config,
+        entities: [config.entity],
+        entity: undefined,
+      };
+    } else {
+      this._config = config;
+    }
   }
 
   protected render() {
@@ -94,8 +104,8 @@ export class CalendarAgendaCardEditor extends LitElement {
     switch (schema.name) {
       case "title":
         return "Title shown at the top of the card";
-      case "entity":
-        return "The calendar entity to display";
+      case "entities":
+        return "The calendar entities to display";
       case "date_range":
         return "Which days to show events for";
       case "hide_background":
@@ -109,8 +119,8 @@ export class CalendarAgendaCardEditor extends LitElement {
     switch (schema.name) {
       case "title":
         return "Title";
-      case "entity":
-        return "Calendar Entity";
+      case "entities":
+        return "Calendar Entities";
       case "date_range":
         return "Date Range";
       case "hide_background":

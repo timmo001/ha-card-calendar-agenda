@@ -75,7 +75,15 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
   }
 
   private async _fetchEvents(): Promise<void> {
-    if (!this.hass || !this._config?.entity) {
+    if (!this.hass || !this._config) {
+      return;
+    }
+
+    const entityIds =
+      this._config.entities ||
+      (this._config.entity ? [this._config.entity] : []);
+
+    if (entityIds.length === 0) {
       return;
     }
 
@@ -85,9 +93,12 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     );
 
     try {
-      const { events } = await fetchCalendarEvents(this.hass, start, end, [
-        { entity_id: this._config.entity },
-      ]);
+      const { events } = await fetchCalendarEvents(
+        this.hass,
+        start,
+        end,
+        entityIds.map((entity_id) => ({ entity_id }))
+      );
       this._events = events;
     } catch (err) {
       console.error("Error fetching calendar events:", err);
@@ -115,7 +126,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
         ? html`<div class="card-header">${this._config.title}</div>`
         : nothing}
       <div class="card-content">
-        ${!this._config.entity
+        ${!this._config.entities && !this._config.entity
           ? html`<p>No calendar selected</p>`
           : this._events === undefined
             ? html`<p>Loading events...</p>`

@@ -1,4 +1,5 @@
 import {
+  array,
   assign,
   boolean,
   defaulted,
@@ -12,6 +13,7 @@ import { lovelaceCardConfigStruct } from "../shared/config/lovelace-card-config"
 export interface CalendarAgendaCardConfig extends LovelaceCardConfig {
   title?: string;
   entity?: string;
+  entities?: string[];
   date_range?: "today" | "today_tomorrow" | "tomorrow" | "week";
   hide_background?: boolean;
 }
@@ -21,6 +23,7 @@ export const calendarAgendaCardConfigStruct = assign(
   object({
     title: optional(string()),
     entity: optional(string()),
+    entities: optional(array(string())),
     date_range: optional(defaulted(string(), "today")),
     hide_background: optional(boolean()),
   })
