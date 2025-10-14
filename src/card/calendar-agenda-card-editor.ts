@@ -17,6 +17,16 @@ export class CalendarAgendaCardEditor extends LitElement {
 
   private _schema: readonly HaFormSchema[] = [
     {
+      name: "entity",
+      selector: {
+        entity: {
+          filter: {
+            domain: "calendar",
+          },
+        },
+      },
+    },
+    {
       name: "hide_background",
       selector: {
         boolean: {},
@@ -63,6 +73,8 @@ export class CalendarAgendaCardEditor extends LitElement {
     schema: HaFormSchema
   ): string | undefined => {
     switch (schema.name) {
+      case "entity":
+        return "The calendar entity to display";
       case "hide_background":
         return "Hide the card background and border";
       default:
@@ -72,6 +84,8 @@ export class CalendarAgendaCardEditor extends LitElement {
 
   private _computeLabelCallback = (schema: HaFormSchema) => {
     switch (schema.name) {
+      case "entity":
+        return "Calendar Entity";
       case "hide_background":
         return "Hide Background";
       default:
