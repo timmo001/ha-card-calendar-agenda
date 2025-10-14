@@ -117,25 +117,27 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
       <div class="card-content">
         ${!this._config.entity
           ? html`<p>No calendar selected</p>`
-          : sortedEvents.length === 0
-            ? html`<p>No events</p>`
-            : html`
-                <ul>
-                  ${sortedEvents.map((event) => {
-                    const startDate = new Date(event.start);
-                    const showTimeOnly = isToday(startDate);
-                    const dateTime = formatDateTime(
-                      startDate,
-                      this.hass.locale.language || "en",
-                      showTimeOnly
-                    );
-                    const duration = formatDuration(event.start, event.end!);
-                    return html`<li>
-                      ${event.title} - ${dateTime} (${duration})
-                    </li>`;
-                  })}
-                </ul>
-              `}
+          : this._events === undefined
+            ? html`<p>Loading events...</p>`
+            : sortedEvents.length === 0
+              ? html`<p>No events</p>`
+              : html`
+                  <ul>
+                    ${sortedEvents.map((event) => {
+                      const startDate = new Date(event.start);
+                      const showTimeOnly = isToday(startDate);
+                      const dateTime = formatDateTime(
+                        startDate,
+                        this.hass.locale.language || "en",
+                        showTimeOnly
+                      );
+                      const duration = formatDuration(event.start, event.end!);
+                      return html`<li>
+                        ${event.title} - ${dateTime} (${duration})
+                      </li>`;
+                    })}
+                  </ul>
+                `}
       </div>
     </ha-card>`;
   }
