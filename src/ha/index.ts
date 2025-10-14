@@ -23,6 +23,12 @@ export type {
   CalendarEvent,
   CalendarEventData,
 } from "./data/calendar";
+export {
+  calcDate,
+  startOfDay,
+  endOfDay,
+  addDays,
+} from "./common/datetime/calc_date";
 export type {
   HomeAssistant,
   LovelaceCard,
