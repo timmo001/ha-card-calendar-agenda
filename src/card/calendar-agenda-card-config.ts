@@ -13,7 +13,7 @@ import { lovelaceCardConfigStruct } from "../shared/config/lovelace-card-config"
 export interface CalendarAgendaCardConfig extends LovelaceCardConfig {
   title?: string;
   entities?: string[];
-  date_range?: "today" | "today_tomorrow" | "tomorrow" | "week";
+  date_range?: "today" | "today_tomorrow" | "tomorrow" | "week" | "this_week";
   hide_background?: boolean;
 }
 
