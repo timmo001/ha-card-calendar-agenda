@@ -56,16 +56,7 @@ export class CalendarAgendaCardEditor extends LitElement {
 
   public setConfig(config: CalendarAgendaCardConfig): void {
     assert(config, calendarAgendaCardConfigStruct);
-
-    if (config.entity && !config.entities) {
-      this._config = {
-        ...config,
-        entities: [config.entity],
-        entity: undefined,
-      };
-    } else {
-      this._config = config;
-    }
+    this._config = config;
   }
 
   protected render() {

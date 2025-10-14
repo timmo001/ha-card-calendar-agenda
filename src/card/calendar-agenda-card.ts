@@ -79,9 +79,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
       return;
     }
 
-    const entityIds =
-      this._config.entities ||
-      (this._config.entity ? [this._config.entity] : []);
+    const entityIds = this._config.entities || [];
 
     if (entityIds.length === 0) {
       return;
@@ -126,7 +124,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
         ? html`<div class="card-header">${this._config.title}</div>`
         : nothing}
       <div class="card-content">
-        ${!this._config.entities && !this._config.entity
+        ${!this._config.entities
           ? html`<p>No calendar selected</p>`
           : this._events === undefined
             ? html`<p>Loading events...</p>`
