@@ -13,6 +13,7 @@ import { BaseElement } from "../utils/base-element";
 import { cardStyle } from "../utils/card-styles";
 import { registerCustomCard } from "../utils/custom-cards";
 import { getDateRange } from "../utils/date-range";
+import { isToday, formatDateTime, formatDuration } from "../utils/datetime";
 import {
   CARD_DESCRIPTION,
   CARD_NAME_FRIENDLY,
@@ -90,6 +91,12 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
       return nothing;
     }
 
+    const sortedEvents = this._events
+      ? [...this._events].sort(
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+      )
+      : [];
+
     return html`<ha-card
       class=${classMap({
       "hide-background": this._config?.hide_background === true,
@@ -99,13 +106,27 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
         ? html`<div class="card-header">${this._config.title}</div>`
         : nothing}
       <div class="card-content">
-        <p>Calendar Agenda Card</p>
-        ${this._config.entity
-        ? html`
-              <p>Calendar: ${this._config.entity}</p>
-              <p>Events: ${this._events?.length ?? "Loading..."}</p>
-            `
-        : html`<p>No calendar selected</p>`}
+        ${!this._config.entity
+        ? html`<p>No calendar selected</p>`
+        : sortedEvents.length === 0
+          ? html`<p>No events</p>`
+          : html`
+                <ul>
+                  ${sortedEvents.map((event) => {
+            const startDate = new Date(event.start);
+            const showTimeOnly = isToday(startDate);
+            const dateTime = formatDateTime(
+              startDate,
+              this.hass.locale.language || "en",
+              showTimeOnly
+            );
+            const duration = formatDuration(event.start, event.end!);
+            return html`<li>
+                      ${event.title} - ${dateTime} (${duration})
+                    </li>`;
+          })}
+                </ul>
+              `}
       </div>
     </ha-card>`;
   }
@@ -120,28 +141,37 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
           display: flex;
           flex-direction: column;
         }
-
         ha-card.hide-background {
           background: transparent;
           box-shadow: none;
           border: none;
         }
 
-        ha-card.hide-background .card-header {
-          padding: 0;
-        }
-
-        ha-card.hide-background .card-content {
-          padding: 0;
-        }
-
         .card-header {
           padding-bottom: 0;
         }
 
+        ha-card.hide-background .card-header {
+          padding: 0 0 var(--ha-space-1);
+          line-height: var(--ha-line-height-normal);
+        }
+
         .card-content {
-          padding: var(--ha-spacing-1, 8px) var(--ha-spacing-2, 16px);
+          padding: var(--ha-space-2) var(--ha-space-4);
           flex: 1;
+        }
+        ha-card.hide-background .card-content {
+          padding: var(--ha-space-1) 0;
+        }
+
+        ul {
+          list-style: inside;
+          margin: 0;
+          padding-inline-start: var(--ha-space-6);
+        }
+
+        li {
+          padding: 0;
         }
       `,
     ];
