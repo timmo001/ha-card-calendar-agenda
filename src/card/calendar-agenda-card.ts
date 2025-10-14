@@ -50,7 +50,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
   @state() private _events?: CalendarEvent[];
 
   public static async getStubConfig(): Promise<CalendarAgendaCardConfig> {
-    return { type: `custom:${CARD_NAME}` };
+    return { type: `custom:${CARD_NAME}`, title: "Agenda" };
   }
 
   public getCardSize(): number {
@@ -92,17 +92,20 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
     return html`<ha-card
       class=${classMap({
-      "hide-background": this._config?.hide_background === true,
-    })}
+        "hide-background": this._config?.hide_background === true,
+      })}
     >
+      ${this._config.title !== undefined
+        ? html`<div class="card-header">${this._config.title}</div>`
+        : nothing}
       <div class="card-content">
         <p>Calendar Agenda Card</p>
         ${this._config.entity
-        ? html`
+          ? html`
               <p>Calendar: ${this._config.entity}</p>
               <p>Events: ${this._events?.length ?? "Loading..."}</p>
             `
-        : html`<p>No calendar selected</p>`}
+          : html`<p>No calendar selected</p>`}
       </div>
     </ha-card>`;
   }

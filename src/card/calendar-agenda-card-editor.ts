@@ -17,6 +17,12 @@ export class CalendarAgendaCardEditor extends LitElement {
 
   private _schema: readonly HaFormSchema[] = [
     {
+      name: "title",
+      selector: {
+        text: {},
+      },
+    },
+    {
       name: "entity",
       selector: {
         entity: {
@@ -86,6 +92,8 @@ export class CalendarAgendaCardEditor extends LitElement {
     schema: HaFormSchema
   ): string | undefined => {
     switch (schema.name) {
+      case "title":
+        return "Title shown at the top of the card";
       case "entity":
         return "The calendar entity to display";
       case "date_range":
@@ -99,6 +107,8 @@ export class CalendarAgendaCardEditor extends LitElement {
 
   private _computeLabelCallback = (schema: HaFormSchema) => {
     switch (schema.name) {
+      case "title":
+        return "Title";
       case "entity":
         return "Calendar Entity";
       case "date_range":
