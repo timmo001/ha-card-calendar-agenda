@@ -93,17 +93,17 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
     return html`<ha-card
       class=${classMap({
-        "hide-background": this._config?.hide_background === true,
-      })}
+      "hide-background": this._config?.hide_background === true,
+    })}
     >
       <div class="card-content">
         <p>Calendar Agenda Card</p>
         ${this._config.entity
-          ? html`
+        ? html`
               <p>Calendar: ${this._config.entity}</p>
               <p>Events: ${this._events?.length ?? "Loading..."}</p>
             `
-          : html`<p>No calendar selected</p>`}
+        : html`<p>No calendar selected</p>`}
       </div>
     </ha-card>`;
   }
