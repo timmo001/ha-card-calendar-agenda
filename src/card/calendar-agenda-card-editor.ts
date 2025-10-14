@@ -27,6 +27,19 @@ export class CalendarAgendaCardEditor extends LitElement {
       },
     },
     {
+      name: "date_range",
+      selector: {
+        select: {
+          options: [
+            { value: "today", label: "Today" },
+            { value: "today_tomorrow", label: "Today & Tomorrow" },
+            { value: "tomorrow", label: "Tomorrow" },
+            { value: "week", label: "This Week" },
+          ],
+        },
+      },
+    },
+    {
       name: "hide_background",
       selector: {
         boolean: {},
@@ -75,6 +88,8 @@ export class CalendarAgendaCardEditor extends LitElement {
     switch (schema.name) {
       case "entity":
         return "The calendar entity to display";
+      case "date_range":
+        return "Which days to show events for";
       case "hide_background":
         return "Hide the card background and border";
       default:
@@ -86,6 +101,8 @@ export class CalendarAgendaCardEditor extends LitElement {
     switch (schema.name) {
       case "entity":
         return "Calendar Entity";
+      case "date_range":
+        return "Date Range";
       case "hide_background":
         return "Hide Background";
       default:
