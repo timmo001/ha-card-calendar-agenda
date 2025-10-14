@@ -12,6 +12,7 @@ import {
 import { BaseElement } from "../utils/base-element";
 import { cardStyle } from "../utils/card-styles";
 import { registerCustomCard } from "../utils/custom-cards";
+import { getDateRange } from "../utils/date-range";
 import {
   CARD_DESCRIPTION,
   CARD_NAME_FRIENDLY,
@@ -68,12 +69,10 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
       return;
     }
 
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-
-    const end = new Date();
-    end.setDate(end.getDate() + 7);
-    end.setHours(23, 59, 59, 999);
+    const { start, end } = getDateRange(
+      this._config.date_range || "today",
+      this.hass
+    );
 
     try {
       const { events } = await fetchCalendarEvents(this.hass, start, end, [
