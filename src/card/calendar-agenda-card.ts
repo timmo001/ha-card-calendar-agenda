@@ -127,8 +127,12 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
           border: none;
         }
 
+        .card-header {
+          padding-bottom: 0;
+        }
+
         .card-content {
-          padding: 16px;
+          padding: var(--ha-spacing-1, 8px) var(--ha-spacing-2, 16px);
           flex: 1;
         }
       `,
