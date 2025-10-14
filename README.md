@@ -1,15 +1,9 @@
 # 📅 Calendar Agenda Card
 
-A custom Home Assistant card for displaying calendar events in an agenda view.
+A custom Home Assistant card for displaying calendar events in a simple agenda view.
 
 > [!WARNING]
 > This card is experimental and under active development. Features may change and breaking changes may occur.
-
-## Features
-
-- Display calendar events in agenda format
-- Clean and modern interface
-- Customizable appearance
 
 ## Installation
 
