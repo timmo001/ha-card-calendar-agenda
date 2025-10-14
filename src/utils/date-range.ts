@@ -36,8 +36,19 @@ export function getDateRange(
     case "this_week": {
       const start = calcDate(now, startOfDay, locale, config);
       // Calculate end of week based on HA's first_weekday, then subtract 1 day
-      const endOfWeekDate = endOfWeek(now, { weekStartsOn: locale.first_weekday });
-      const endDateMinusOne = calcDate(endOfWeekDate, addDays, locale, config, -1);
+      // Home Assistant first_weekday: 0=Monday, 6=Sunday
+      // date-fns weekStartsOn: 0=Sunday, 1=Monday, ..., 6=Saturday
+      const weekStartsOn = ((locale.first_weekday ?? 0) + 1) % 7;
+      const endOfWeekDate = endOfWeek(now, {
+        weekStartsOn: weekStartsOn as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+      });
+      const endDateMinusOne = calcDate(
+        endOfWeekDate,
+        addDays,
+        locale,
+        config,
+        -1
+      );
       const end = calcDate(endDateMinusOne, endOfDay, locale, config);
       return { start, end };
     }

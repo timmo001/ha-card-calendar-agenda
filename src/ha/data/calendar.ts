@@ -33,6 +33,11 @@ export const fetchCalendarEvents = async (
   end: Date,
   calendars: Calendar[]
 ): Promise<{ events: CalendarEvent[]; errors: string[] }> => {
+  if (!start || isNaN(start.getTime()) || !end || isNaN(end.getTime())) {
+    console.error("Invalid date range:", { start, end });
+    return { events: [], errors: [] };
+  }
+
   const params = encodeURI(
     `?start=${start.toISOString()}&end=${end.toISOString()}`
   );
