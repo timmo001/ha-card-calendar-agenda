@@ -168,6 +168,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
         .card-content {
           padding: var(--ha-space-2) var(--ha-space-4);
           flex: 1;
+          overflow-y: auto;
         }
         ha-card.hide-background .card-content {
           padding: var(--ha-space-1) 0;
