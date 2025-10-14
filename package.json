@@ -19,10 +19,12 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@date-fns/tz": "^1.4.1",
     "@material/mwc-select": "^0.27.0",
     "@material/mwc-textfield": "^0.27.0",
     "color": "^4.2.3",
     "culori": "^4.0.2",
+    "date-fns": "^4.1.0",
     "hammerjs": "^2.0.8",
     "home-assistant-js-websocket": "^9.5.0",
     "intl-messageformat": "^10.7.16",
