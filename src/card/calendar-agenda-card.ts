@@ -41,7 +41,14 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
   public setConfig(config: CalendarAgendaCardConfig): void {
     assert(config, calendarAgendaCardConfigStruct);
     this._config = config;
-    this._fetchEvents();
+    this._scheduleFetch();
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this._fetchTimeout) {
+      clearTimeout(this._fetchTimeout);
+    }
   }
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -49,6 +56,9 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
   @state() private _config?: CalendarAgendaCardConfig;
 
   @state() private _events?: CalendarEvent[];
+
+  private _fetchTimeout?: number;
+  private _lastEntityIds?: string[];
 
   public static async getStubConfig(): Promise<CalendarAgendaCardConfig> {
     return { type: `custom:${CARD_NAME}`, title: "Agenda" };
@@ -69,9 +79,19 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
   protected updated(changedProps: Map<string, any>): void {
     super.updated(changedProps);
-    if (changedProps.has("hass")) {
-      this._fetchEvents();
+    if (changedProps.has("hass") || changedProps.has("_config")) {
+      this._scheduleFetch();
     }
+  }
+
+  private _scheduleFetch(): void {
+    if (this._fetchTimeout) {
+      clearTimeout(this._fetchTimeout);
+    }
+    
+    this._fetchTimeout = window.setTimeout(() => {
+      this._fetchEvents();
+    }, 200); // Debounce by 200ms
   }
 
   private async _fetchEvents(): Promise<void> {
@@ -80,8 +100,17 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     }
 
     const entityIds = this._config.entities || [];
+    
+    // Only fetch if entities changed or first time
+    if (this._lastEntityIds && 
+        JSON.stringify(this._lastEntityIds.sort()) === JSON.stringify(entityIds.sort())) {
+      return;
+    }
+    
+    this._lastEntityIds = entityIds;
 
     if (entityIds.length === 0) {
+      this._events = [];
       return;
     }
 
