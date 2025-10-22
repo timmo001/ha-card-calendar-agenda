@@ -11,12 +11,12 @@ export function getDateRange(
 
   switch (dateRange) {
     case "today": {
-      const start = calcDate(now, startOfDay, locale, config);
+      const start = now;
       const end = calcDate(now, endOfDay, locale, config);
       return { start, end };
     }
     case "today_tomorrow": {
-      const start = calcDate(now, startOfDay, locale, config);
+      const start = now;
       const tomorrow = calcDate(now, addDays, locale, config, 1);
       const end = calcDate(tomorrow, endOfDay, locale, config);
       return { start, end };
@@ -28,13 +28,13 @@ export function getDateRange(
       return { start, end };
     }
     case "week": {
-      const start = calcDate(now, startOfDay, locale, config);
+      const start = now;
       const endDate = calcDate(now, addDays, locale, config, 6);
       const end = calcDate(endDate, endOfDay, locale, config);
       return { start, end };
     }
     case "this_week": {
-      const start = calcDate(now, startOfDay, locale, config);
+      const start = now;
       // Calculate end of week based on HA's first_weekday, then subtract 1 day
       // Home Assistant first_weekday: 0=Monday, 6=Sunday
       // date-fns weekStartsOn: 0=Sunday, 1=Monday, ..., 6=Saturday
@@ -53,7 +53,7 @@ export function getDateRange(
       return { start, end };
     }
     default: {
-      const start = calcDate(now, startOfDay, locale, config);
+      const start = now;
       const end = calcDate(now, endOfDay, locale, config);
       return { start, end };
     }
