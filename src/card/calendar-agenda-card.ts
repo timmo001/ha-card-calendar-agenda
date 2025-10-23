@@ -2,6 +2,7 @@ import { css, CSSResultGroup, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { assert } from "superstruct";
+import { isAfter } from "date-fns";
 import {
   HomeAssistant,
   LovelaceCard,
@@ -138,10 +139,13 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
       return nothing;
     }
 
+    const now = new Date();
     const sortedEvents = this._events
-      ? [...this._events].sort(
-          (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
-        )
+      ? [...this._events]
+          .filter((event) => isAfter(new Date(event.end || event.start), now))
+          .sort(
+            (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+          )
       : [];
 
     return html`<ha-card
