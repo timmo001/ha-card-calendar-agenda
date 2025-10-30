@@ -103,8 +103,8 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     const entityIds = this._config.entities || [];
     
     // Only fetch if entities changed or first time
-    if (this._lastEntityIds && 
-        JSON.stringify(this._lastEntityIds.sort()) === JSON.stringify(entityIds.sort())) {
+    if (this._lastEntityIds &&
+        JSON.stringify([...this._lastEntityIds].sort()) === JSON.stringify([...entityIds].sort())) {
       return;
     }
     
