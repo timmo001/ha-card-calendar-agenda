@@ -89,7 +89,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     if (this._fetchTimeout) {
       clearTimeout(this._fetchTimeout);
     }
-    
+
     this._fetchTimeout = window.setTimeout(() => {
       this._fetchEvents();
     }, 200); // Debounce by 200ms
@@ -101,13 +101,16 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     }
 
     const entityIds = this._config.entities || [];
-    
+
     // Only fetch if entities changed or first time
-    if (this._lastEntityIds &&
-        JSON.stringify([...this._lastEntityIds].sort()) === JSON.stringify([...entityIds].sort())) {
+    if (
+      this._lastEntityIds &&
+      JSON.stringify([...this._lastEntityIds].sort()) ===
+        JSON.stringify([...entityIds].sort())
+    ) {
       return;
     }
-    
+
     this._lastEntityIds = entityIds;
 
     if (entityIds.length === 0) {
@@ -157,29 +160,27 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
         ? html`<div class="card-header">${this._config.title}</div>`
         : nothing}
       <div class="card-content">
-        ${!this._config.entities
-          ? html`<p>No calendar selected</p>`
-          : this._events === undefined
-            ? html`<p>Loading events...</p>`
-            : sortedEvents.length === 0
-              ? html`<p>No events</p>`
-              : html`
-                  <ul>
-                    ${sortedEvents.map((event) => {
-                      const startDate = new Date(event.start);
-                      const showTimeOnly = isToday(startDate);
-                      const dateTime = formatDateTime(
-                        startDate,
-                        this.hass.locale.language || "en",
-                        showTimeOnly
-                      );
-                      const duration = formatDuration(event.start, event.end!);
-                      return html`<li>
-                        ${event.title} - ${dateTime} (${duration})
-                      </li>`;
-                    })}
-                  </ul>
-                `}
+        <ul>
+          ${!this._config.entities
+            ? html`<li>No calendar selected</li>`
+            : this._events === undefined
+              ? html`<li>Loading events...</li>`
+              : sortedEvents.length === 0
+                ? html`<li>No events</li>`
+                : sortedEvents.map((event) => {
+                    const startDate = new Date(event.start);
+                    const showTimeOnly = isToday(startDate);
+                    const dateTime = formatDateTime(
+                      startDate,
+                      this.hass.locale.language || "en",
+                      showTimeOnly
+                    );
+                    const duration = formatDuration(event.start, event.end!);
+                    return html`<li>
+                      ${event.title} - ${dateTime} (${duration})
+                    </li>`;
+                  })}
+        </ul>
       </div>
     </ha-card>`;
   }
