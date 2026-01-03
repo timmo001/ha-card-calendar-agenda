@@ -15,6 +15,7 @@ export interface CalendarAgendaCardConfig extends LovelaceCardConfig {
   entities?: string[];
   date_range?: "today" | "today_tomorrow" | "tomorrow" | "week" | "this_week";
   hide_background?: boolean;
+  hide_when_empty?: boolean;
 }
 
 export const calendarAgendaCardConfigStruct = assign(
@@ -24,5 +25,6 @@ export const calendarAgendaCardConfigStruct = assign(
     entities: optional(array(string())),
     date_range: optional(defaulted(string(), "today")),
     hide_background: optional(boolean()),
+    hide_when_empty: optional(boolean()),
   })
 );

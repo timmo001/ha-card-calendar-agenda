@@ -53,6 +53,12 @@ export class CalendarAgendaCardEditor extends LitElement {
         boolean: {},
       },
     },
+    {
+      name: "hide_when_empty",
+      selector: {
+        boolean: {},
+      },
+    },
   ] as const;
 
   public setConfig(config: CalendarAgendaCardConfig): void {
@@ -102,6 +108,8 @@ export class CalendarAgendaCardEditor extends LitElement {
         return "Which days to show events for";
       case "hide_background":
         return "Hide the card background and border";
+      case "hide_when_empty":
+        return "Hide the entire card when there are no events";
       default:
         return undefined;
     }
@@ -117,6 +125,8 @@ export class CalendarAgendaCardEditor extends LitElement {
         return "Date Range";
       case "hide_background":
         return "Hide Background";
+      case "hide_when_empty":
+        return "Hide When Empty";
       default:
         return undefined;
     }

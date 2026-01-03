@@ -151,6 +151,15 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
           )
       : [];
 
+    // Hide card when empty if option is enabled
+    if (
+      this._config.hide_when_empty === true &&
+      this._events !== undefined &&
+      sortedEvents.length === 0
+    ) {
+      return nothing;
+    }
+
     return html`<ha-card
       class=${classMap({
         "hide-background": this._config?.hide_background === true,
