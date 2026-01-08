@@ -59,6 +59,12 @@ export class CalendarAgendaCardEditor extends LitElement {
         boolean: {},
       },
     },
+    {
+      name: "dedupe_events",
+      selector: {
+        boolean: {},
+      },
+    },
   ] as const;
 
   public setConfig(config: CalendarAgendaCardConfig): void {
@@ -110,6 +116,8 @@ export class CalendarAgendaCardEditor extends LitElement {
         return "Hide the card background and border";
       case "hide_when_empty":
         return "Hide the entire card when there are no events";
+      case "dedupe_events":
+        return "Remove duplicate events with identical titles and start times";
       default:
         return undefined;
     }
@@ -127,6 +135,8 @@ export class CalendarAgendaCardEditor extends LitElement {
         return "Hide Background";
       case "hide_when_empty":
         return "Hide When Empty";
+      case "dedupe_events":
+        return "Deduplicate Events";
       default:
         return undefined;
     }

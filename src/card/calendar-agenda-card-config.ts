@@ -16,6 +16,7 @@ export interface CalendarAgendaCardConfig extends LovelaceCardConfig {
   date_range?: "today" | "today_tomorrow" | "tomorrow" | "week" | "this_week";
   hide_background?: boolean;
   hide_when_empty?: boolean;
+  dedupe_events?: boolean;
 }
 
 export const calendarAgendaCardConfigStruct = assign(
@@ -26,5 +27,6 @@ export const calendarAgendaCardConfigStruct = assign(
     date_range: optional(defaulted(string(), "today")),
     hide_background: optional(boolean()),
     hide_when_empty: optional(boolean()),
+    dedupe_events: optional(boolean()),
   })
 );

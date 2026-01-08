@@ -137,19 +137,64 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     }
   }
 
+  private _deduplicateEvents(events: CalendarEvent[]): CalendarEvent[] {
+    if (!this._config?.dedupe_events || !this._config?.entities) {
+      return events;
+    }
+
+    const seen = new Map<string, CalendarEvent>();
+    const entityPriority = this._config.entities;
+
+    // Build priority map: lower index = higher priority
+    const priorityMap = new Map<string, number>();
+    entityPriority.forEach((entityId, index) => {
+      priorityMap.set(entityId, index);
+    });
+
+    for (const event of events) {
+      // Create unique key: title + start time (case-sensitive)
+      const key = `${event.title}|${event.start}`;
+
+      const existingEvent = seen.get(key);
+
+      if (!existingEvent) {
+        // First occurrence of this event
+        seen.set(key, event);
+      } else {
+        // Duplicate found - keep the one from higher priority calendar
+        const existingPriority =
+          priorityMap.get(existingEvent.calendar) ?? Infinity;
+        const newPriority = priorityMap.get(event.calendar) ?? Infinity;
+
+        if (newPriority < existingPriority) {
+          // New event has higher priority (earlier in config)
+          seen.set(key, event);
+        }
+        // Otherwise keep existing event
+      }
+    }
+
+    return Array.from(seen.values());
+  }
+
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
     }
 
     const now = new Date();
-    const sortedEvents = this._events
+    let sortedEvents = this._events
       ? [...this._events]
           .filter((event) => isAfter(new Date(event.end || event.start), now))
           .sort(
             (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
           )
       : [];
+
+    // Apply deduplication if enabled
+    if (this._config?.dedupe_events) {
+      sortedEvents = this._deduplicateEvents(sortedEvents);
+    }
 
     // Hide card when empty if option is enabled
     if (
