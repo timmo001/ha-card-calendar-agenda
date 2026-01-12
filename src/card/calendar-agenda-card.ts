@@ -231,7 +231,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
                     );
                     const duration = formatDuration(event.start, event.end!);
                     return html`<li>
-                      ${event.title} - ${dateTime} (${duration})
+                      [${dateTime}] ${event.title} (${duration})
                     </li>`;
                   })}
         </ul>
