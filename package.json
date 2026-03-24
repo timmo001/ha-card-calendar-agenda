@@ -4,8 +4,8 @@
   "description": "Home Assistant Calendar Agenda Card",
   "main": "src/card/calendar-agenda-card.js",
   "scripts": {
-    "start": "rollup -c --watch --bundleConfigAsCjs",
-    "build": "rollup -c --bundleConfigAsCjs",
+    "start": "rolldown -c --watch",
+    "build": "rolldown -c",
     "format": "prettier --write ."
   },
   "author": {
@@ -41,16 +41,11 @@
     "@material/mwc-ripple": "^0.27.0",
     "@material/tab-bar": "^14.0.0",
     "@rollup/plugin-babel": "^6.0.4",
-    "@rollup/plugin-commonjs": "^28.0.6",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^16.0.1",
-    "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^12.1.4",
     "@types/color": "^4.2.0",
     "@types/hammerjs": "^2.0.46",
     "eslint": "^9.35.0",
     "prettier": "^3.6.2",
-    "rollup": "^4.50.1",
+    "rolldown": "^1.0.0-rc.11",
     "rollup-plugin-serve": "^1.1.1",
     "tslib": "^2.8.1",
     "typescript": "^5.9.2"

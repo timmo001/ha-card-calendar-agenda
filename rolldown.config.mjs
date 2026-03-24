@@ -1,14 +1,13 @@
+import { createRequire } from "node:module";
+import { defineConfig } from "rolldown";
 import {
   getBabelInputPlugin,
   getBabelOutputPlugin,
 } from "@rollup/plugin-babel";
-import commonjs from "@rollup/plugin-commonjs";
-import json from "@rollup/plugin-json";
-import nodeResolve from "@rollup/plugin-node-resolve";
-import terser from "@rollup/plugin-terser";
-import typescript from "@rollup/plugin-typescript";
 import serve from "rollup-plugin-serve";
-import ignore from "./rollup-plugins/rollup-ignore-plugin.js";
+import ignore from "./rollup-plugins/rollup-ignore-plugin.mjs";
+
+const require = createRequire(import.meta.url);
 
 const IGNORED_FILES = [
   "@material/mwc-notched-outline/mwc-notched-outline.js",
@@ -20,8 +19,6 @@ const IGNORED_FILES = [
   "@material/mwc-icon/mwc-icon.js",
 ];
 
-const dev = process.env.ROLLUP_WATCH;
-
 const serveOptions = {
   contentBase: ["./dist"],
   host: "0.0.0.0",
@@ -32,40 +29,36 @@ const serveOptions = {
   },
 };
 
-const plugins = [
-  ignore({
-    files: IGNORED_FILES.map((file) => require.resolve(file)),
-  }),
-  typescript({
-    declaration: false,
-  }),
-  nodeResolve(),
-  json(),
-  commonjs(),
-  getBabelInputPlugin({
-    babelHelpers: "bundled",
-  }),
-  getBabelOutputPlugin({
-    presets: [
-      [
-        "@babel/preset-env",
-        {
-          modules: false,
-        },
+export default defineConfig(({ watch }) => {
+  const plugins = [
+    ignore({
+      files: IGNORED_FILES.map((file) => require.resolve(file)),
+    }),
+    getBabelInputPlugin({
+      babelHelpers: "bundled",
+    }),
+    getBabelOutputPlugin({
+      presets: [
+        [
+          "@babel/preset-env",
+          {
+            modules: false,
+          },
+        ],
       ],
-    ],
-    compact: true,
-  }),
-  ...(dev ? [serve(serveOptions)] : [terser()]),
-];
+      compact: true,
+    }),
+    ...(watch ? [serve(serveOptions)] : []),
+  ];
 
-export default [
-  {
+  return {
     input: "src/card/calendar-agenda-card.ts",
+    tsconfig: "./tsconfig.json",
     output: {
       dir: "dist",
       format: "es",
-      inlineDynamicImports: true,
+      codeSplitting: false,
+      minify: !watch,
     },
     plugins,
     moduleContext: (id) => {
@@ -77,5 +70,5 @@ export default [
         return "window";
       }
     },
-  },
-];
+  };
+});
