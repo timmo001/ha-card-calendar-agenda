@@ -9,6 +9,9 @@ import {
   LovelaceCardEditor,
   CalendarEvent,
   fetchCalendarEvents,
+  supportsCalendarEventSubscription,
+  subscribeCalendarEvents,
+  normalizeSubscriptionEventData,
 } from "../ha";
 import { BaseElement } from "../utils/base-element";
 import { cardStyle } from "../utils/card-styles";
@@ -50,6 +53,8 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     if (this._fetchTimeout) {
       clearTimeout(this._fetchTimeout);
     }
+    void this._unsubscribeCalendarEvents();
+    this._lastSubscriptionKey = undefined;
   }
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -60,6 +65,13 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
   private _fetchTimeout?: number;
   private _lastEntityIds?: string[];
+
+  /** Unsubscribe promises from `calendar/event/subscribe` (HA 2026.5+). */
+  private _calendarUnsubs: Promise<() => Promise<void>>[] = [];
+
+  private _eventsByCalendar: Record<string, CalendarEvent[]> = {};
+
+  private _lastSubscriptionKey?: string;
 
   public static async getStubConfig(): Promise<CalendarAgendaCardConfig> {
     return { type: `custom:${CARD_NAME}`, title: "Agenda" };
@@ -91,11 +103,120 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     }
 
     this._fetchTimeout = window.setTimeout(() => {
-      this._fetchEvents();
+      void this._syncCalendarData();
     }, 200); // Debounce by 200ms
   }
 
-  private async _fetchEvents(): Promise<void> {
+  private async _unsubscribeCalendarEvents(): Promise<void> {
+    const pending = this._calendarUnsubs;
+    this._calendarUnsubs = [];
+    for (const promise of pending) {
+      try {
+        const unsub = await promise;
+        await unsub();
+      } catch (_err) {
+        // Subscription may already be closed.
+      }
+    }
+  }
+
+  private _computeSubscriptionKey(): string {
+    const entityIds = this._config?.entities || [];
+    const dr = this._config?.date_range || "today";
+    const now = new Date();
+    const dayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    return JSON.stringify({
+      e: [...entityIds].sort(),
+      dr,
+      dayKey,
+    });
+  }
+
+  private _mergeSubscriptionEvents(): void {
+    const entityIds = this._config?.entities || [];
+    const merged: CalendarEvent[] = [];
+    for (const id of entityIds) {
+      const list = this._eventsByCalendar[id];
+      if (list) {
+        merged.push(...list);
+      }
+    }
+    this._events = merged;
+  }
+
+  private async _syncCalendarSubscriptions(): Promise<void> {
+    if (!this.hass || !this._config) {
+      return;
+    }
+
+    const entityIds = this._config.entities || [];
+    const key = this._computeSubscriptionKey();
+    if (
+      key === this._lastSubscriptionKey &&
+      this._calendarUnsubs.length > 0
+    ) {
+      return;
+    }
+    this._lastSubscriptionKey = key;
+
+    await this._unsubscribeCalendarEvents();
+    this._eventsByCalendar = {};
+
+    if (entityIds.length === 0) {
+      this._events = [];
+      return;
+    }
+
+    const { start, end } = getDateRange(
+      this._config.date_range || "today",
+      this.hass
+    );
+
+    for (const entity_id of entityIds) {
+      const cal = { entity_id };
+      const unsubPromise = subscribeCalendarEvents(
+        this.hass,
+        entity_id,
+        start,
+        end,
+        (update) => {
+          const raw = update.events ?? [];
+          const normalized = raw
+            .map((ev) => normalizeSubscriptionEventData(ev, cal))
+            .filter((ev): ev is CalendarEvent => ev !== null);
+          this._eventsByCalendar[entity_id] = normalized;
+          this._mergeSubscriptionEvents();
+        }
+      );
+      this._calendarUnsubs.push(unsubPromise);
+      try {
+        await unsubPromise;
+      } catch (err) {
+        console.error(
+          `Calendar subscription failed for ${entity_id}:`,
+          err
+        );
+      }
+    }
+
+    this._mergeSubscriptionEvents();
+  }
+
+  private async _syncCalendarData(): Promise<void> {
+    if (!this.hass || !this._config) {
+      return;
+    }
+
+    if (supportsCalendarEventSubscription(this.hass)) {
+      await this._syncCalendarSubscriptions();
+      return;
+    }
+
+    await this._fetchEventsRest();
+  }
+
+  /** REST path for Home Assistant before 2026.5 (no websocket event subscription). */
+  private async _fetchEventsRest(): Promise<void> {
     if (!this.hass || !this._config) {
       return;
     }

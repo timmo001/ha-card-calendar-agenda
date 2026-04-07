@@ -17,11 +17,18 @@ export {
   isNumericState,
   isUnavailableState,
 } from "./data/entity";
-export { fetchCalendarEvents } from "./data/calendar";
+export {
+  fetchCalendarEvents,
+  supportsCalendarEventSubscription,
+  subscribeCalendarEvents,
+  normalizeSubscriptionEventData,
+} from "./data/calendar";
 export type {
   Calendar,
   CalendarEvent,
   CalendarEventData,
+  CalendarEventApiData,
+  CalendarEventSubscription,
 } from "./data/calendar";
 export {
   calcDate,
