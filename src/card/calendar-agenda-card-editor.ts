@@ -40,6 +40,7 @@ export class CalendarAgendaCardEditor extends LitElement {
           options: [
             { value: "today", label: "Today" },
             { value: "today_tomorrow", label: "Today & Tomorrow" },
+            { value: "next_3_days", label: "Next 3 Days" },
             { value: "tomorrow", label: "Tomorrow" },
             { value: "week", label: "Week (7 Days)" },
             { value: "this_week", label: "This Week" },

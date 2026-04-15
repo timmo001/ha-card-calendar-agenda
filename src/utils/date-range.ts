@@ -21,6 +21,12 @@ export function getDateRange(
       const end = calcDate(tomorrow, endOfDay, locale, config);
       return { start, end };
     }
+    case "next_3_days": {
+      const start = now;
+      const thirdDay = calcDate(now, addDays, locale, config, 2);
+      const end = calcDate(thirdDay, endOfDay, locale, config);
+      return { start, end };
+    }
     case "tomorrow": {
       const tomorrow = calcDate(now, addDays, locale, config, 1);
       const start = calcDate(tomorrow, startOfDay, locale, config);
