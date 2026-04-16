@@ -5,6 +5,8 @@ A custom Home Assistant card for displaying calendar events in a simple agenda v
 > [!WARNING]
 > This card is experimental, breaking changes may occur.
 
+<img width="1481" height="1385" alt="image" src="https://github.com/user-attachments/assets/7c502632-7059-40df-a0f2-6e5240a9fc10" />
+
 ## Installation
 
 ### HACS (Recommended)
