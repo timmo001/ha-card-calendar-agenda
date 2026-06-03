@@ -33,6 +33,18 @@ registerCustomCard({
   type: CARD_NAME,
   name: CARD_NAME_FRIENDLY,
   description: CARD_DESCRIPTION,
+  getEntitySuggestion: (_hass, entityId) => {
+    if (entityId.split(".")[0] !== "calendar") {
+      return null;
+    }
+
+    return {
+      config: {
+        type: `custom:${CARD_NAME}`,
+        entities: [entityId],
+      },
+    };
+  },
 });
 
 @customElement(CARD_NAME)
