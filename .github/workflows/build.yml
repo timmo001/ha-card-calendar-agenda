@@ -11,4 +11,4 @@ on:
 
 jobs:
   build:
-    uses: timmo001/workflows/.github/workflows/ha-card-build.yml@78079dac4b415ee56c5dc446bc532f4b41d5eebb # master
+    uses: timmo001/workflows/.github/workflows/ha-card-build.yml@e0caff057b9334455c7826e8d2c983e952981535 # master
