@@ -11,4 +11,4 @@ on:
 
 jobs:
   validate:
-    uses: timmo001/workflows/.github/workflows/ha-card-validate.yml@bc424f94da51b00a8dc3d2e5a0875b7b5cc789ae # master
+    uses: timmo001/workflows/.github/workflows/ha-card-validate.yml@f51573e8363772976dea94bcea773012efc4a391 # master
