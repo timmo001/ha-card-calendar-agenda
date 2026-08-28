@@ -345,6 +345,11 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
         "horizontal-right": this._config.horizontal_alignment === "right",
         "vertical-center": this._config.vertical_alignment === "center",
         "vertical-bottom": this._config.vertical_alignment === "bottom",
+        "bullet-circle": this._config.bullet_type === "circle",
+        "bullet-square": this._config.bullet_type === "square",
+        "bullet-none": this._config.bullet_type === "none",
+        "bullet-decimal": this._config.bullet_type === "decimal",
+        "bullet-dash": this._config.bullet_type === "dash",
       })}
     >
       ${this._config.title !== undefined
@@ -430,6 +435,23 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
           list-style: inside;
           margin: 0;
           padding-inline-start: var(--ha-space-6);
+        }
+
+        ha-card.bullet-circle ul {
+          list-style-type: circle;
+        }
+        ha-card.bullet-square ul {
+          list-style-type: square;
+        }
+        ha-card.bullet-none ul {
+          list-style-type: none;
+          padding-inline-start: 0;
+        }
+        ha-card.bullet-decimal ul {
+          list-style-type: decimal;
+        }
+        ha-card.bullet-dash ul {
+          list-style-type: "- ";
         }
 
         li {

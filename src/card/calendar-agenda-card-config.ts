@@ -26,6 +26,7 @@ export interface CalendarAgendaCardConfig extends LovelaceCardConfig {
   dedupe_events?: boolean;
   horizontal_alignment?: "left" | "center" | "right";
   vertical_alignment?: "top" | "center" | "bottom";
+  bullet_type?: "disc" | "circle" | "square" | "none" | "decimal" | "dash";
 }
 
 export const calendarAgendaCardConfigStruct = assign(
@@ -39,5 +40,8 @@ export const calendarAgendaCardConfigStruct = assign(
     dedupe_events: optional(boolean()),
     horizontal_alignment: optional(enums(["left", "center", "right"])),
     vertical_alignment: optional(enums(["top", "center", "bottom"])),
+    bullet_type: optional(
+      enums(["disc", "circle", "square", "none", "decimal", "dash"])
+    ),
   })
 );

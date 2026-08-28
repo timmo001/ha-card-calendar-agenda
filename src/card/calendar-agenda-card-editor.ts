@@ -49,6 +49,22 @@ export class CalendarAgendaCardEditor extends LitElement {
       },
     },
     {
+      name: "bullet_type",
+      selector: {
+        select: {
+          mode: "dropdown",
+          options: [
+            { value: "disc", label: "Disc" },
+            { value: "circle", label: "Circle" },
+            { value: "square", label: "Square" },
+            { value: "none", label: "None" },
+            { value: "decimal", label: "Numbered" },
+            { value: "dash", label: "Dash" },
+          ],
+        },
+      },
+    },
+    {
       name: "",
       type: "grid",
       column_min_width: "100px",
@@ -146,6 +162,8 @@ export class CalendarAgendaCardEditor extends LitElement {
         return "The calendar entities to display";
       case "date_range":
         return "Which days to show events for";
+      case "bullet_type":
+        return "Marker shown before each event";
       case "horizontal_alignment":
         return "Align the title and events horizontally";
       case "vertical_alignment":
@@ -169,6 +187,8 @@ export class CalendarAgendaCardEditor extends LitElement {
         return "Calendar Entities";
       case "date_range":
         return "Date Range";
+      case "bullet_type":
+        return "Bullet Type";
       case "horizontal_alignment":
         return "Horizontal Alignment";
       case "vertical_alignment":
