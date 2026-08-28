@@ -3,6 +3,7 @@ import {
   assign,
   boolean,
   defaulted,
+  enums,
   object,
   optional,
   string,
@@ -23,6 +24,8 @@ export interface CalendarAgendaCardConfig extends LovelaceCardConfig {
   hide_background?: boolean;
   hide_when_empty?: boolean;
   dedupe_events?: boolean;
+  horizontal_alignment?: "left" | "center" | "right";
+  vertical_alignment?: "top" | "center" | "bottom";
 }
 
 export const calendarAgendaCardConfigStruct = assign(
@@ -34,5 +37,7 @@ export const calendarAgendaCardConfigStruct = assign(
     hide_background: optional(boolean()),
     hide_when_empty: optional(boolean()),
     dedupe_events: optional(boolean()),
+    horizontal_alignment: optional(enums(["left", "center", "right"])),
+    vertical_alignment: optional(enums(["top", "center", "bottom"])),
   })
 );

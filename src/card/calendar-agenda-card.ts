@@ -341,6 +341,10 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     return html`<ha-card
       class=${classMap({
         "hide-background": this._config?.hide_background === true,
+        "horizontal-center": this._config.horizontal_alignment === "center",
+        "horizontal-right": this._config.horizontal_alignment === "right",
+        "vertical-center": this._config.vertical_alignment === "center",
+        "vertical-bottom": this._config.vertical_alignment === "bottom",
       })}
     >
       ${this._config.title !== undefined
@@ -401,6 +405,22 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
           padding: var(--ha-space-2) var(--ha-space-4);
           flex: 1;
           overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+        }
+
+        ha-card.horizontal-center {
+          text-align: center;
+        }
+        ha-card.horizontal-right {
+          text-align: right;
+        }
+
+        ha-card.vertical-center .card-content > ul {
+          margin-block: auto;
+        }
+        ha-card.vertical-bottom .card-content > ul {
+          margin-block-start: auto;
         }
         ha-card.hide-background .card-content {
           padding: var(--ha-space-1) 0;

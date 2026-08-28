@@ -49,6 +49,39 @@ export class CalendarAgendaCardEditor extends LitElement {
       },
     },
     {
+      name: "",
+      type: "grid",
+      column_min_width: "100px",
+      schema: [
+        {
+          name: "horizontal_alignment",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: [
+                { value: "left", label: "Left" },
+                { value: "center", label: "Centre" },
+                { value: "right", label: "Right" },
+              ],
+            },
+          },
+        },
+        {
+          name: "vertical_alignment",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: [
+                { value: "top", label: "Top" },
+                { value: "center", label: "Centre" },
+                { value: "bottom", label: "Bottom" },
+              ],
+            },
+          },
+        },
+      ],
+    },
+    {
       name: "hide_background",
       selector: {
         boolean: {},
@@ -113,6 +146,10 @@ export class CalendarAgendaCardEditor extends LitElement {
         return "The calendar entities to display";
       case "date_range":
         return "Which days to show events for";
+      case "horizontal_alignment":
+        return "Align the title and events horizontally";
+      case "vertical_alignment":
+        return "Align events within the available card height";
       case "hide_background":
         return "Hide the card background and border";
       case "hide_when_empty":
@@ -132,6 +169,10 @@ export class CalendarAgendaCardEditor extends LitElement {
         return "Calendar Entities";
       case "date_range":
         return "Date Range";
+      case "horizontal_alignment":
+        return "Horizontal Alignment";
+      case "vertical_alignment":
+        return "Vertical Alignment";
       case "hide_background":
         return "Hide Background";
       case "hide_when_empty":
