@@ -102,6 +102,7 @@ export const animation = {
     ${unsafeCSS(strAnimations.returning)}
   `,
 };
+
 export const animations = css`
   ${unsafeCSS(Object.values(strAnimations).join("\n"))}
 `;

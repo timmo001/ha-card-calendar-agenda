@@ -26,35 +26,46 @@ export const generateEntityFilter = (
   const domains = filter.domain
     ? new Set(ensureArray(filter.domain))
     : undefined;
+
   const deviceClasses = filter.device_class
     ? new Set(ensureArray(filter.device_class))
     : undefined;
+
   const floors = filter.floor ? new Set(ensureArray(filter.floor)) : undefined;
   const areas = filter.area ? new Set(ensureArray(filter.area)) : undefined;
+
   const devices = filter.device
     ? new Set(ensureArray(filter.device))
     : undefined;
+
   const entityCategories = filter.entity_category
     ? new Set(ensureArray(filter.entity_category))
     : undefined;
+
   const labels = filter.label ? new Set(ensureArray(filter.label)) : undefined;
+
   const hiddenPlatforms = filter.hidden_platform
     ? new Set(ensureArray(filter.hidden_platform))
     : undefined;
 
   return (entityId: string) => {
-    const stateObj = hass.states[entityId] as HassEntity | undefined;
+    const stateObj: HassEntity | undefined = hass.states[entityId];
+
     if (!stateObj) {
       return false;
     }
+
     if (domains) {
       const domain = computeDomain(entityId);
+
       if (!domains.has(domain)) {
         return false;
       }
     }
+
     if (deviceClasses) {
       const dc = stateObj.attributes.device_class || "none";
+
       if (!deviceClasses.has(dc)) {
         return false;
       }
@@ -77,43 +88,54 @@ export const generateEntityFilter = (
         return false;
       }
     }
+
     if (areas) {
       if (!area) {
         return false;
       }
+
       if (!areas.has(area.area_id)) {
         return false;
       }
     }
+
     if (devices) {
       if (!device) {
         return false;
       }
+
       if (!devices.has(device.id)) {
         return false;
       }
     }
+
     if (labels) {
       if (!entity) {
         return false;
       }
+
       if (!entity.labels.some((label) => labels.has(label))) {
         return false;
       }
     }
+
     if (entityCategories) {
       if (!entity) {
         return false;
       }
+
       const category = entity?.entity_category || "none";
+
       if (!entityCategories.has(category)) {
         return false;
       }
     }
+
     if (hiddenPlatforms) {
       if (!entity) {
         return false;
       }
+
       if (entity.platform && hiddenPlatforms.has(entity.platform)) {
         return false;
       }

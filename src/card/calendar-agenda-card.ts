@@ -51,7 +51,8 @@ registerCustomCard({
 export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("./calendar-agenda-card-editor");
-    return document.createElement(CARD_EDITOR_NAME) as LovelaceCardEditor;
+
+    return document.createElement(CARD_EDITOR_NAME);
   }
 
   public setConfig(config: CalendarAgendaCardConfig): void {
@@ -62,9 +63,11 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
+
     if (this._fetchTimeout) {
       clearTimeout(this._fetchTimeout);
     }
+
     void this._unsubscribeCalendarEvents();
     this._lastSubscriptionKey = undefined;
   }
@@ -104,6 +107,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
   protected updated(changedProps: Map<string, any>): void {
     super.updated(changedProps);
+
     if (changedProps.has("hass") || changedProps.has("_config")) {
       this._scheduleFetch();
     }
@@ -122,11 +126,12 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
   private async _unsubscribeCalendarEvents(): Promise<void> {
     const pending = this._calendarUnsubs;
     this._calendarUnsubs = [];
+
     for (const promise of pending) {
       try {
         const unsub = await promise;
         await unsub();
-      } catch (_err) {
+      } catch {
         // Subscription may already be closed.
       }
     }
@@ -137,6 +142,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     const dr = this._config?.date_range || "today";
     const now = new Date();
     const dayKey = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+
     return JSON.stringify({
       e: [...entityIds].sort(),
       dr,
@@ -147,12 +153,15 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
   private _mergeSubscriptionEvents(): void {
     const entityIds = this._config?.entities || [];
     const merged: CalendarEvent[] = [];
+
     for (const id of entityIds) {
       const list = this._eventsByCalendar[id];
+
       if (list) {
         merged.push(...list);
       }
     }
+
     this._events = merged;
   }
 
@@ -163,12 +172,11 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
     const entityIds = this._config.entities || [];
     const key = this._computeSubscriptionKey();
-    if (
-      key === this._lastSubscriptionKey &&
-      this._calendarUnsubs.length > 0
-    ) {
+
+    if (key === this._lastSubscriptionKey && this._calendarUnsubs.length > 0) {
       return;
     }
+
     this._lastSubscriptionKey = key;
 
     await this._unsubscribeCalendarEvents();
@@ -176,6 +184,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
     if (entityIds.length === 0) {
       this._events = [];
+
       return;
     }
 
@@ -186,6 +195,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
     for (const entity_id of entityIds) {
       const cal = { entity_id };
+
       const unsubPromise = subscribeCalendarEvents(
         this.hass,
         entity_id,
@@ -193,21 +203,22 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
         end,
         (update) => {
           const raw = update.events ?? [];
+
           const normalized = raw
             .map((ev) => normalizeSubscriptionEventData(ev, cal))
             .filter((ev): ev is CalendarEvent => ev !== null);
+
           this._eventsByCalendar[entity_id] = normalized;
           this._mergeSubscriptionEvents();
         }
       );
+
       this._calendarUnsubs.push(unsubPromise);
+
       try {
         await unsubPromise;
       } catch (err) {
-        console.error(
-          `Calendar subscription failed for ${entity_id}:`,
-          err
-        );
+        console.error(`Calendar subscription failed for ${entity_id}:`, err);
       }
     }
 
@@ -221,6 +232,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
     if (supportsCalendarEventSubscription(this.hass)) {
       await this._syncCalendarSubscriptions();
+
       return;
     }
 
@@ -248,6 +260,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
     if (entityIds.length === 0) {
       this._events = [];
+
       return;
     }
 
@@ -263,6 +276,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
         end,
         entityIds.map((entity_id) => ({ entity_id }))
       );
+
       this._events = events;
     } catch (err) {
       console.error("Error fetching calendar events:", err);
@@ -297,6 +311,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
         // Duplicate found - keep the one from higher priority calendar
         const existingPriority =
           priorityMap.get(existingEvent.calendar) ?? Infinity;
+
         const newPriority = priorityMap.get(event.calendar) ?? Infinity;
 
         if (newPriority < existingPriority) {
@@ -316,6 +331,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
     }
 
     const now = new Date();
+
     let sortedEvents = this._events
       ? [...this._events]
           .filter((event) => isAfter(new Date(event.end || event.start), now))
@@ -352,30 +368,37 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
         "bullet-dash": this._config.bullet_type === "dash",
       })}
     >
-      ${this._config.title !== undefined
-        ? html`<div class="card-header">${this._config.title}</div>`
-        : nothing}
+      ${
+        this._config.title !== undefined
+          ? html`<div class="card-header">${this._config.title}</div>`
+          : nothing
+      }
       <div class="card-content">
         <ul>
-          ${!this._config.entities
-            ? html`<li>No calendar selected</li>`
-            : this._events === undefined
-              ? html`<li>Loading events...</li>`
-              : sortedEvents.length === 0
-                ? html`<li>No events</li>`
-                : sortedEvents.map((event) => {
-                    const startDate = new Date(event.start);
-                    const showTimeOnly = isToday(startDate);
-                    const dateTime = formatDateTime(
-                      startDate,
-                      this.hass.locale.language || "en",
-                      showTimeOnly
-                    );
-                    const duration = formatDuration(event.start, event.end!);
-                    return html`<li>
-                      [${dateTime}] ${event.title} (${duration})
-                    </li>`;
-                  })}
+          ${
+            !this._config.entities
+              ? html`<li>No calendar selected</li>`
+              : this._events === undefined
+                ? html`<li>Loading events...</li>`
+                : sortedEvents.length === 0
+                  ? html`<li>No events</li>`
+                  : sortedEvents.map((event) => {
+                      const startDate = new Date(event.start);
+                      const showTimeOnly = isToday(startDate);
+
+                      const dateTime = formatDateTime(
+                        startDate,
+                        this.hass.locale.language || "en",
+                        showTimeOnly
+                      );
+
+                      const duration = formatDuration(event.start, event.end!);
+
+                      return html`<li>
+                        [${dateTime}] ${event.title} (${duration})
+                      </li>`;
+                    })
+          }
         </ul>
       </div>
     </ha-card>`;

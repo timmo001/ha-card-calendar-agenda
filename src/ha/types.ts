@@ -39,6 +39,7 @@ declare global {
       getComputedStyleValue(element, propertyName);
     };
   }
+
   // for fire event
   interface HASSDomEvents {
     "value-changed": {
@@ -108,7 +109,10 @@ export interface ThemeSettings {
   accentColor?: string;
 }
 
-export interface PanelInfo<T = Record<string, any> | null> {
+export type JsonValue =
+  string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+export interface PanelInfo<T = unknown> {
   component_name: string;
   config: T;
   icon: string | null;
@@ -160,7 +164,7 @@ export interface CurrentUser {
 export interface ServiceCallRequest {
   domain: string;
   service: string;
-  serviceData?: Record<string, any>;
+  serviceData?: Record<string, JsonValue>;
   target?: HassServiceTarget;
 }
 
@@ -219,10 +223,10 @@ export interface HomeAssistant {
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,
-    parameters?: Record<string, any>,
+    parameters?: Record<string, JsonValue>,
     headers?: Record<string, string>
   ): Promise<T>;
-  fetchWithAuth(path: string, init?: Record<string, any>): Promise<Response>;
+  fetchWithAuth(path: string, init?: RequestInit): Promise<Response>;
   sendWS(msg: MessageBase): void;
   callWS<T>(msg: MessageBase): Promise<T>;
   loadBackendTranslation(
@@ -244,7 +248,6 @@ export type Constructor<T = any> = new (...args: any[]) => T;
 // Lovelace interfaces needed by the card
 export interface LovelaceCardConfig {
   type: string;
-  [key: string]: unknown;
 }
 
 export interface LovelaceCard {
@@ -271,36 +274,28 @@ export interface LovelaceLayoutOptions {
 // Additional Lovelace types
 export interface ActionConfig {
   action?: string;
-  [key: string]: any;
 }
 
 export interface LovelaceConfig {
-  views: Array<Record<string, any>>;
-  [key: string]: any;
+  views: Array<Record<string, JsonValue>>;
 }
 
 export interface LovelaceBadgeConfig {
   type: string;
-  [key: string]: any;
 }
 
 export interface LovelaceCardFeatureConfig {
   type: string;
-  [key: string]: any;
 }
 
 export interface LovelaceViewConfig {
   title?: string;
-  [key: string]: any;
 }
 
-export interface ShowViewConfig {
-  [key: string]: any;
-}
+export type ShowViewConfig = Record<string, JsonValue>;
 
 export interface Condition {
   condition: string;
   entity?: string;
   state?: string;
-  [key: string]: any;
 }

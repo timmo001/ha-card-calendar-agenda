@@ -9,6 +9,12 @@ import {
   calendarAgendaCardConfigStruct,
 } from "./calendar-agenda-card-config";
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [CARD_EDITOR_NAME]: CalendarAgendaCardEditor;
+  }
+}
+
 @customElement(CARD_EDITOR_NAME)
 export class CalendarAgendaCardEditor extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -139,8 +145,10 @@ export class CalendarAgendaCardEditor extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
-    const newConfig = ev.detail.value as CalendarAgendaCardConfig;
+  private _valueChanged = (
+    ev: CustomEvent<{ value: CalendarAgendaCardConfig }>
+  ): void => {
+    const newConfig = ev.detail.value;
 
     const config: CalendarAgendaCardConfig = {
       ...newConfig,
@@ -150,7 +158,7 @@ export class CalendarAgendaCardEditor extends LitElement {
     this.dispatchEvent(
       new CustomEvent("config-changed", { detail: { config } })
     );
-  }
+  };
 
   private _computeHelperCallback = (
     schema: HaFormSchema

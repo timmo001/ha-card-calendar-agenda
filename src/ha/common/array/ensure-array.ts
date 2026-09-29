@@ -17,5 +17,6 @@ export function ensureArray(value) {
   if (value === undefined || value === null || Array.isArray(value)) {
     return value;
   }
+
   return [value];
 }

@@ -34,20 +34,25 @@ export function computeRgbColor(color: string): string {
   if (color === "primary" || color === "accent") {
     return `var(--rgb-${color}-color)`;
   }
+
   if (COLORS.includes(color)) {
     return `var(--rgb-${color})`;
   } else if (color.startsWith("#")) {
     try {
       const rgbColor = rgb(color);
+
       if (rgbColor) {
         const { r, g, b } = rgbColor;
+
         return `${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}`;
       }
+
       return "";
-    } catch (err) {
+    } catch {
       return "";
     }
   }
+
   return color;
 }
 

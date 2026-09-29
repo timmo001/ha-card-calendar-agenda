@@ -1,5 +1,6 @@
 export function isToday(date: Date): boolean {
   const today = new Date();
+
   return (
     date.getDate() === today.getDate() &&
     date.getMonth() === today.getMonth() &&
@@ -38,6 +39,7 @@ export function formatDuration(startStr: string, endStr: string): string {
   }
 
   const durationHours = Math.floor(durationMinutes / 60);
+
   if (durationHours === 24) {
     return "All day";
   }
@@ -47,5 +49,6 @@ export function formatDuration(startStr: string, endStr: string): string {
   }
 
   const durationDays = Math.floor(durationHours / 24);
+
   return `${durationDays} ${durationDays === 1 ? "day" : "days"}`;
 }

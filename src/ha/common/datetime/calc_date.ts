@@ -19,16 +19,9 @@ import { TimeZone } from "../../data/translation";
 const calcZonedDate = (
   date: Date,
   tz: string,
-  fn: (date: Date, options?: any) => Date | number | boolean,
+  fn: (date: Date, options?: any) => Date,
   options?
-) => {
-  const tzDate = new TZDate(date, tz);
-  const fnResult = fn(tzDate, options);
-  if (fnResult instanceof Date) {
-    return new Date(fnResult.getTime());
-  }
-  return fnResult;
-};
+) => new Date(fn(new TZDate(date, tz), options).getTime());
 
 export const calcDate = (
   date: Date,
@@ -38,24 +31,24 @@ export const calcDate = (
   options?
 ) =>
   locale.time_zone === TimeZone.server
-    ? (calcZonedDate(date, config.time_zone, fn, options) as Date)
+    ? calcZonedDate(date, config.time_zone, fn, options)
     : fn(date, options);
 
-export const calcDateProperty = (
+export const calcDateProperty = <Result extends boolean | number>(
   date: Date,
-  fn: (date: Date, options?: any) => boolean | number,
+  fn: (date: Date, options?: any) => Result,
   locale: FrontendLocaleData,
   config: HassConfig,
   options?
 ) =>
   locale.time_zone === TimeZone.server
-    ? (calcZonedDate(date, config.time_zone, fn, options) as number | boolean)
+    ? fn(new TZDate(date, config.time_zone), options)
     : fn(date, options);
 
-export const calcDateDifferenceProperty = (
+export const calcDateDifferenceProperty = <Result extends boolean | number>(
   endDate: Date,
   startDate: Date,
-  fn: (date: Date, options?: any) => boolean | number,
+  fn: (date: Date, options?: any) => Result,
   locale: FrontendLocaleData,
   config: HassConfig
 ) =>
@@ -75,28 +68,25 @@ export const shiftDateRange = (
   forward: boolean,
   locale: FrontendLocaleData,
   config: any
-): { start: Date; end: Date } => {
+) => {
   let start: Date;
   let end: Date;
+
   if (
-    (calcDateProperty(
-      startDate,
-      isFirstDayOfMonth,
-      locale,
-      config
-    ) as boolean) &&
-    (calcDateProperty(endDate, isLastDayOfMonth, locale, config) as boolean)
+    calcDateProperty(startDate, isFirstDayOfMonth, locale, config) &&
+    calcDateProperty(endDate, isLastDayOfMonth, locale, config)
   ) {
     const difference =
-      ((calcDateDifferenceProperty(
+      (calcDateDifferenceProperty(
         endDate,
         startDate,
         differenceInMonths,
         locale,
         config
-      ) as number) +
+      ) +
         1) *
       (forward ? 1 : -1);
+
     start = calcDate(startDate, addMonths, locale, config, difference);
     end = calcDate(
       calcDate(endDate, addMonths, locale, config, difference),
@@ -119,44 +109,50 @@ export const shiftDateRange = (
     )
   ) {
     const difference =
-      ((calcDateDifferenceProperty(
+      (calcDateDifferenceProperty(
         endDate,
         startDate,
         differenceInDays,
         locale,
         config
-      ) as number) +
+      ) +
         1) *
       (forward ? 1 : -1);
+
     start = calcDate(startDate, addDays, locale, config, difference);
     end = calcDate(endDate, addDays, locale, config, difference);
   } else {
     const difference =
-      (calcDateDifferenceProperty(
+      calcDateDifferenceProperty(
         endDate,
         startDate,
         differenceInMilliseconds,
         locale,
         config
-      ) as number) * (forward ? 1 : -1);
+      ) * (forward ? 1 : -1);
+
     start = calcDate(startDate, addMilliseconds, locale, config, difference);
     end = calcDate(endDate, addMilliseconds, locale, config, difference);
   }
+
   return { start, end };
 };
 
 export const parseDate = (date: string, timezone: string): Date => {
   const tzDate = new TZDate(date, timezone);
+
   return new Date(tzDate.getTime());
 };
 
 export const formatDate = (date: Date, timezone: string): string => {
   const tzDate = new TZDate(date, timezone);
+
   return tzDate.toISOString().split("T")[0];
 };
 
 export const formatTime = (date: Date, timezone: string): string => {
   const tzDate = new TZDate(date, timezone);
+
   return tzDate.toISOString().split("T")[1].split(".")[0];
 };
 

@@ -1,15 +1,14 @@
 import { StructError } from "superstruct";
 import type { HomeAssistant } from "../../types";
 
-export const handleStructError = (
-  hass: HomeAssistant,
-  err: Error
-): { warnings: string[]; errors?: string[] } => {
+export const handleStructError = (hass: HomeAssistant, err: Error) => {
   if (!(err instanceof StructError)) {
     return { warnings: [err.message], errors: undefined };
   }
+
   const errors: string[] = [];
   const warnings: string[] = [];
+
   for (const failure of err.failures()) {
     if (failure.value === undefined) {
       errors.push(
@@ -55,5 +54,6 @@ export const handleStructError = (
       );
     }
   }
+
   return { warnings, errors };
 };

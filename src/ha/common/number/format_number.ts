@@ -42,20 +42,13 @@ export const numberFormatToLocale = (
  * @param options Intl.NumberFormatOptions to use
  */
 export const formatNumber = (
-  num: string | number,
+  num: number,
   localeOptions?: FrontendLocaleData,
   options?: Intl.NumberFormatOptions
 ): string => {
   const locale = localeOptions
     ? numberFormatToLocale(localeOptions)
     : undefined;
-
-  // Polyfill for Number.isNaN, which is more reliable than the global isNaN()
-  Number.isNaN =
-    Number.isNaN ||
-    function isNaN(input) {
-      return typeof input === "number" && isNaN(input);
-    };
 
   if (
     localeOptions?.number_format !== NumberFormat.none &&
@@ -65,21 +58,20 @@ export const formatNumber = (
     try {
       return new Intl.NumberFormat(
         locale,
-        getDefaultFormatOptions(num, options)
+        getDefaultFormatOptions(options)
       ).format(Number(num));
     } catch (err: any) {
       // Don't fail when using "TEST" language
       // eslint-disable-next-line no-console
       console.error(err);
+
       return new Intl.NumberFormat(
         undefined,
-        getDefaultFormatOptions(num, options)
+        getDefaultFormatOptions(options)
       ).format(Number(num));
     }
   }
-  if (typeof num === "string") {
-    return num;
-  }
+
   return `${round(num, options?.maximumFractionDigits).toString()}${
     options?.style === "currency" ? ` ${options.currency}` : ""
   }`;
@@ -95,18 +87,21 @@ export const getNumberFormatOptions = (
   entity?: EntityRegistryDisplayEntry
 ): Intl.NumberFormatOptions | undefined => {
   const precision = entity?.display_precision;
+
   if (precision != null) {
     return {
       maximumFractionDigits: precision,
       minimumFractionDigits: precision,
     };
   }
+
   if (
     Number.isInteger(Number(entityState.attributes?.step)) &&
     Number.isInteger(Number(entityState.state))
   ) {
     return { maximumFractionDigits: 0 };
   }
+
   if (entityState.attributes.step != null) {
     return {
       maximumFractionDigits: Math.ceil(
@@ -114,37 +109,17 @@ export const getNumberFormatOptions = (
       ),
     };
   }
+
   return undefined;
 };
 
 /**
  * Generates default options for Intl.NumberFormat
- * @param num The number to be formatted
  * @param options The Intl.NumberFormatOptions that should be included in the returned options
  */
 export const getDefaultFormatOptions = (
-  num: string | number,
   options?: Intl.NumberFormatOptions
-): Intl.NumberFormatOptions => {
-  const defaultOptions: Intl.NumberFormatOptions = {
-    maximumFractionDigits: 2,
-    ...options,
-  };
-
-  if (typeof num !== "string") {
-    return defaultOptions;
-  }
-
-  // Keep decimal trailing zeros if they are present in a string numeric value
-  if (
-    !options ||
-    (options.minimumFractionDigits === undefined &&
-      options.maximumFractionDigits === undefined)
-  ) {
-    const digits = num.indexOf(".") > -1 ? num.split(".")[1].length : 0;
-    defaultOptions.minimumFractionDigits = digits;
-    defaultOptions.maximumFractionDigits = digits;
-  }
-
-  return defaultOptions;
-};
+): Intl.NumberFormatOptions => ({
+  maximumFractionDigits: 2,
+  ...options,
+});

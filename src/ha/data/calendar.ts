@@ -14,7 +14,6 @@ export interface CalendarEvent {
   borderColor?: string;
   calendar: string;
   eventData: CalendarEventData;
-  [key: string]: any;
 }
 
 export interface CalendarEventData {
@@ -57,18 +56,24 @@ export const supportsCalendarEventSubscription = (
   hass: HomeAssistant
 ): boolean => {
   const version = hass.config.version;
+
   if (!version) {
     return false;
   }
+
   const parts = version.split(".");
+
   if (parts.length < 2) {
     return false;
   }
+
   const year = parseInt(parts[0]!, 10);
   const month = parseInt(parts[1]!, 10);
+
   if (Number.isNaN(year) || Number.isNaN(month)) {
     return false;
   }
+
   return year > 2026 || (year === 2026 && month >= 5);
 };
 
@@ -87,15 +92,18 @@ export const subscribeCalendarEvents = (
   });
 
 const getCalendarDate = (dateObj: CalendarDateValue): string | undefined => {
-  if (typeof dateObj === "string") {
+  if (!(dateObj instanceof Object)) {
     return dateObj;
   }
+
   if ("dateTime" in dateObj) {
     return dateObj.dateTime;
   }
+
   if ("date" in dateObj) {
     return dateObj.date;
   }
+
   return undefined;
 };
 
@@ -108,9 +116,11 @@ export const normalizeSubscriptionEventData = (
 ): CalendarEvent | null => {
   const eventStart = getCalendarDate(eventData.start);
   const eventEnd = getCalendarDate(eventData.end);
+
   if (!eventStart || !eventEnd) {
     return null;
   }
+
   const normalizedEventData: CalendarEventData = {
     summary: eventData.summary,
     dtstart: eventStart,
@@ -120,6 +130,7 @@ export const normalizeSubscriptionEventData = (
     recurrence_id: eventData.recurrence_id ?? undefined,
     rrule: eventData.rrule ?? undefined,
   };
+
   return {
     start: eventStart,
     end: eventEnd,
@@ -139,6 +150,7 @@ export const fetchCalendarEvents = async (
 ): Promise<{ events: CalendarEvent[]; errors: string[] }> => {
   if (!start || isNaN(start.getTime()) || !end || isNaN(end.getTime())) {
     console.error("Invalid date range:", { start, end });
+
     return { events: [], errors: [] };
   }
 
@@ -161,15 +173,18 @@ export const fetchCalendarEvents = async (
 
   for (const [idx, promise] of promises.entries()) {
     let result: CalendarEventApiData[];
+
     try {
       result = await promise;
-    } catch (_err) {
+    } catch {
       errors.push(calendars[idx]!.entity_id);
       continue;
     }
+
     const cal = calendars[idx]!;
     result.forEach((ev) => {
       const normalized = normalizeSubscriptionEventData(ev, cal);
+
       if (normalized) {
         calEvents.push(normalized);
       }

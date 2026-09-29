@@ -10,7 +10,6 @@ import {
   type,
   union,
 } from "superstruct";
-import { BaseActionConfig } from "../../../../data/lovelace";
 
 const actionConfigStructUser = object({
   user: string(),
@@ -79,23 +78,28 @@ export const actionConfigStructType = object({
 });
 
 export const actionConfigStruct = dynamic<any>((value) => {
-  if (value && typeof value === "object" && "action" in value) {
-    switch ((value as BaseActionConfig).action!) {
+  if (value instanceof Object && "action" in value) {
+    switch (value.action) {
       case "call-service": {
         return actionConfigStructService;
       }
+
       case "perform-action": {
         return actionConfigStructService;
       }
+
       case "fire-dom-event": {
         return actionConfigStructCustom;
       }
+
       case "navigate": {
         return actionConfigStructNavigate;
       }
+
       case "url": {
         return actionConfigStructUrl;
       }
+
       case "assist": {
         return actionConfigStructAssist;
       }
