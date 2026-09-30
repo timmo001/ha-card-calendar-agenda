@@ -206,7 +206,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
 
           const normalized = raw
             .map((ev) => normalizeSubscriptionEventData(ev, cal))
-            .filter((ev): ev is CalendarEvent => ev !== null);
+            .filter((ev) => ev !== null);
 
           this._eventsByCalendar[entity_id] = normalized;
           this._mergeSubscriptionEvents();
@@ -392,7 +392,7 @@ export class CalendarAgendaCard extends BaseElement implements LovelaceCard {
                         showTimeOnly
                       );
 
-                      const duration = formatDuration(event.start, event.end!);
+                      const duration = formatDuration(event.start, event.end ?? event.start);
 
                       return html`<li>
                         [${dateTime}] ${event.title} (${duration})

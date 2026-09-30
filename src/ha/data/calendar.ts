@@ -67,8 +67,8 @@ export const supportsCalendarEventSubscription = (
     return false;
   }
 
-  const year = parseInt(parts[0]!, 10);
-  const month = parseInt(parts[1]!, 10);
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10);
 
   if (Number.isNaN(year) || Number.isNaN(month)) {
     return false;
@@ -177,11 +177,11 @@ export const fetchCalendarEvents = async (
     try {
       result = await promise;
     } catch {
-      errors.push(calendars[idx]!.entity_id);
+      errors.push(calendars[idx].entity_id);
       continue;
     }
 
-    const cal = calendars[idx]!;
+    const cal = calendars[idx];
     result.forEach((ev) => {
       const normalized = normalizeSubscriptionEventData(ev, cal);
 
