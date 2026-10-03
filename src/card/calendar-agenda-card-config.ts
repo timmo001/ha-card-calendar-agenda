@@ -4,6 +4,7 @@ import {
   boolean,
   defaulted,
   enums,
+  number,
   object,
   optional,
   string,
@@ -21,6 +22,8 @@ export interface CalendarAgendaCardConfig extends LovelaceCardConfig {
     | "tomorrow"
     | "week"
     | "this_week";
+  card_opacity?: number;
+  /** @deprecated Use card_opacity */
   hide_background?: boolean;
   hide_when_empty?: boolean;
   dedupe_events?: boolean;
@@ -35,6 +38,7 @@ export const calendarAgendaCardConfigStruct = assign(
     title: optional(string()),
     entities: optional(array(string())),
     date_range: optional(defaulted(string(), "today")),
+    card_opacity: optional(number()),
     hide_background: optional(boolean()),
     hide_when_empty: optional(boolean()),
     dedupe_events: optional(boolean()),

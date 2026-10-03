@@ -104,9 +104,16 @@ export class CalendarAgendaCardEditor extends LitElement {
       ],
     },
     {
-      name: "hide_background",
+      name: "card_opacity",
+      default: 100,
       selector: {
-        boolean: {},
+        number: {
+          min: 0,
+          max: 100,
+          step: 1,
+          mode: "slider",
+          unit_of_measurement: "%",
+        },
       },
     },
     {
@@ -125,6 +132,15 @@ export class CalendarAgendaCardEditor extends LitElement {
 
   public setConfig(config: CalendarAgendaCardConfig): void {
     assert(config, calendarAgendaCardConfigStruct);
+
+    if (config.hide_background !== undefined) {
+      const { hide_background, ...rest } = config;
+      config = {
+        ...rest,
+        card_opacity: rest.card_opacity ?? (hide_background ? 0 : 100),
+      };
+    }
+
     this._config = config;
   }
 
@@ -176,8 +192,8 @@ export class CalendarAgendaCardEditor extends LitElement {
         return "Align the title and events horizontally";
       case "vertical_alignment":
         return "Align events within the available card height";
-      case "hide_background":
-        return "Hide the card background and border";
+      case "card_opacity":
+        return "Opacity of the card background and border";
       case "hide_when_empty":
         return "Hide the entire card when there are no events";
       case "dedupe_events":
@@ -201,8 +217,8 @@ export class CalendarAgendaCardEditor extends LitElement {
         return "Horizontal Alignment";
       case "vertical_alignment":
         return "Vertical Alignment";
-      case "hide_background":
-        return "Hide Background";
+      case "card_opacity":
+        return "Card Opacity";
       case "hide_when_empty":
         return "Hide When Empty";
       case "dedupe_events":
