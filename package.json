@@ -24,7 +24,7 @@
     "@date-fns/tz": "1.5.0",
     "culori": "4.0.2",
     "date-fns": "4.4.0",
-    "home-assistant-js-websocket": "9.7.0",
+    "home-assistant-js-websocket": "9.7.1",
     "lit": "3.3.3",
     "superstruct": "2.0.2"
   },
