@@ -1,6 +1,7 @@
 {
   "name": "ha-card-calendar-agenda",
   "version": "0.0.1",
+  "type": "module",
   "description": "Home Assistant Calendar Agenda Card",
   "main": "src/card/calendar-agenda-card.js",
   "scripts": {
@@ -34,7 +35,7 @@
     "@material/mwc-ripple": "0.27.0",
     "@oxlint/plugins": "1.87.0",
     "@rollup/plugin-babel": "7.1.0",
-    "@timmo001/oxlint-rules": "0.5.0",
+    "@timmo001/oxlint-rules": "0.6.2",
     "@types/color": "4.2.1",
     "@types/hammerjs": "2.0.46",
     "oxlint": "1.87.0",
