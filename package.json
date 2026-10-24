@@ -39,7 +39,7 @@
     "@types/color": "4.2.1",
     "@types/hammerjs": "2.0.46",
     "oxlint": "1.89.0",
-    "oxlint-tsgolint": "7.0.2004",
+    "oxlint-tsgolint": "7.0.2005",
     "prettier": "3.9.10",
     "rolldown": "1.2.15",
     "rollup-plugin-serve": "3.0.0",
