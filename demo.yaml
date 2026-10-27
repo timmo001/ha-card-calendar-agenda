@@ -1,0 +1,21 @@
+# Live demo on https://timmo.dev/demos/ha-card-calendar-agenda, rendered with
+# Home Assistant's embed components against mocked entities. It's read from
+# each release, so it has to match that release's card.
+#
+# Calendars without events in `calendars` get sample events around today.
+entities:
+  - entity_id: calendar.family
+    state: "off"
+    attributes:
+      friendly_name: Family
+  - entity_id: calendar.work
+    state: "off"
+    attributes:
+      friendly_name: Work
+cards:
+  - type: custom:calendar-agenda-card
+    title: Agenda
+    entities:
+      - calendar.family
+      - calendar.work
+    date_range: week
