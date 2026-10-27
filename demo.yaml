@@ -2,8 +2,7 @@
 # Home Assistant's embed components against mocked entities. It's read from
 # each release, so it has to match that release's card.
 #
-# The demo's mocked backend doesn't answer calendar event requests yet, so the
-# agenda shows as empty.
+# Calendars without events in `calendars` get sample events around today.
 entities:
   - entity_id: calendar.family
     state: "off"
