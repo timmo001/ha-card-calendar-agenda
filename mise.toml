@@ -1,0 +1,37 @@
+min_version = "2025.1.0"
+
+[tools]
+node = "24.22.3"
+# Matches packageManager in package.json
+pnpm = "12.21.0"
+hk = "2.12.0"
+pkl = "0.33.0"
+# The linters the shared hk pre-push hook runs, matching timmo001/groundwork
+python = "3.15.2"
+"pipx:yamllint" = "1.38.0"
+"npm:markdownlint-cli2" = "0.24.1"
+actionlint = "1.7.12"
+shellcheck = "0.11.0"
+
+[tasks.install]
+description = "Install dependencies"
+run = "pnpm install --frozen-lockfile"
+
+[tasks.lint]
+description = "Lint with the shared Oxlint rules"
+depends = ["install"]
+run = "pnpm lint"
+
+[tasks."format"]
+description = "Format with Prettier"
+depends = ["install"]
+run = "pnpm format"
+
+[tasks.build]
+description = "Build the card"
+depends = ["install"]
+run = "pnpm build"
+
+[tasks.check]
+description = "Lint and build"
+depends = ["lint", "build"]
